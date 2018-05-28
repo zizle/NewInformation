@@ -2,6 +2,7 @@
 
 from datetime import timedelta
 from redis import StrictRedis
+import logging
 
 
 class Config(object):
@@ -28,17 +29,20 @@ class Config(object):
 class DevelopmentConfig(Config):
     DEBUG = True
     SQLALCHEMY_DATABASE_URI = 'mysql+pymsql://root:mysql@127.0.0.1:3306/db_information_github'
+    LOGGING_LEVEL = logging.DEBUG
 
 
 class ProductionConfig(Config):
     DEBUG = False
     SQLALCHEMY_DATABASE_URI = 'mysql+pymsql://root:mysql@127.0.0.1:3306/db_pro_information_github'
+    LOGGING_LEVEL = logging.ERROR
 
 
 class UnittestConfig(Config):
     DEBUG = True
     TESTING = True
     SQLALCHEMY_DATABASE_URI = 'mysql+pymsql://root:mysql@127.0.0.1:3306/db_test_information_github'
+    LOGGING_LEVEL = logging.DEBUG
 
 
 configs = {
