@@ -161,8 +161,14 @@ $(function(){
 var imageCodeId = ""
 
 // TODO 生成一个图片验证码的编号，并设置页面中图片验证码img标签的src属性
+// image标签绑定的点击事件
 function generateImageCode() {
-
+    // 生成唯一识别图片的uuid
+    imageCodeId = generateUUID()
+    // 设置image标签中的src的url
+    var url = '/passport/image_code?imageCodeId='+imageCodeId
+    // 将url赋值给image标签的src
+    $('.get_pic_code').attr('src', url)
 }
 
 // 发送短信验证码

@@ -26,6 +26,8 @@ def setup_log(level):
 
 # 创建连接MySQL全局对象
 db = SQLAlchemy()
+# 便于其他模块使用redis
+redis_store = None
 
 
 def create_app(config_name):
@@ -36,6 +38,8 @@ def create_app(config_name):
     app.config.from_object(configs[config_name])
     # 传入app
     db.init_app(app)
+    # 全局给redis_store赋值
+    global redis_store
     redis_store = StrictRedis(host=configs[config_name].REDIS_HOST, port=configs[config_name].REDIS_PORT)
     # 开启csrf保护
     CSRFProtect(app)
