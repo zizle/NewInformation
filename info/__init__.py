@@ -40,8 +40,11 @@ def create_app(config_name):
     # 开启csrf保护
     CSRFProtect(app)
     Session(app)
-    # 导入路由，避免过早导入路由失败，app注册的地方导入
-    from info.modules.index import index_bule
+    # 导入蓝图，避免过早导入蓝图失败(有些参数还没创建)，app注册的地方导入
+    from info.modules.index import index_blue
     # 注册主页路由给app
-    app.register_blueprint(index_bule)
+    app.register_blueprint(index_blue)
+    # 注册passport蓝图
+    from info.modules.passport import passport_blue
+    app.register_blueprint(passport_blue)
     return app

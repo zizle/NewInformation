@@ -2,6 +2,6 @@
 
 from flask import Blueprint
 
-index_blue = Blueprint('index', __name__)
+passport_blue = Blueprint('passport', __name__, url_prefix='/passport')
 
 from . import views
