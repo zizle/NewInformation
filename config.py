@@ -8,7 +8,7 @@ import logging
 class Config(object):
     DEBUG = True
     # 连接数据库MySQL
-    SQLALCHEMY_DATABASE_URI = 'mysql+pymsql://root:mysql@127.0.0.1:3306/db_information_github'
+    SQLALCHEMY_DATABASE_URI = 'mysql://root:mysql@127.0.0.1:3306/db_information_github'
     # 设置不追踪数据库改变，提高点性能
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     # redis 数据库配置
@@ -28,20 +28,20 @@ class Config(object):
 
 class DevelopmentConfig(Config):
     DEBUG = True
-    SQLALCHEMY_DATABASE_URI = 'mysql+pymsql://root:mysql@127.0.0.1:3306/db_information_github'
+    SQLALCHEMY_DATABASE_URI = 'mysql://root:mysql@127.0.0.1:3306/db_information_github'
     LOGGING_LEVEL = logging.DEBUG
 
 
 class ProductionConfig(Config):
     DEBUG = False
-    SQLALCHEMY_DATABASE_URI = 'mysql+pymsql://root:mysql@127.0.0.1:3306/db_pro_information_github'
+    SQLALCHEMY_DATABASE_URI = 'mysql://root:mysql@127.0.0.1:3306/db_pro_information_github'
     LOGGING_LEVEL = logging.ERROR
 
 
 class UnittestConfig(Config):
     DEBUG = True
     TESTING = True
-    SQLALCHEMY_DATABASE_URI = 'mysql+pymsql://root:mysql@127.0.0.1:3306/db_test_information_github'
+    SQLALCHEMY_DATABASE_URI = 'mysql://root:mysql@127.0.0.1:3306/db_test_information_github'
     LOGGING_LEVEL = logging.DEBUG
 
 
