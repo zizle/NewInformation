@@ -13,10 +13,6 @@ Migrate(app, db)
 manager.add_command('mysql', MigrateCommand)
 
 
-@app.route('/')
-def index():
-    return '<h1>hello flask!</h1>'
-
-
 if __name__ == '__main__':
+    print(app.url_map)
     manager.run()

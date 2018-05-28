@@ -40,4 +40,8 @@ def create_app(config_name):
     # 开启csrf保护
     CSRFProtect(app)
     Session(app)
+    # 导入路由，避免过早导入路由失败，app注册的地方导入
+    from info.modules.index import index_bule
+    # 注册主页路由给app
+    app.register_blueprint(index_bule)
     return app
