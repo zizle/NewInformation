@@ -42,7 +42,7 @@ def create_app(config_name):
     global redis_store
     redis_store = StrictRedis(host=configs[config_name].REDIS_HOST, port=configs[config_name].REDIS_PORT)
     # 开启csrf保护
-    CSRFProtect(app)
+    # CSRFProtect(app)
     Session(app)
     # 导入蓝图，避免过早导入蓝图失败(有些参数还没创建)，app注册的地方导入
     from info.modules.index import index_blue

@@ -190,7 +190,27 @@ function sendSMSCode() {
         return;
     }
 
+    // 构造ajax请求参数
+    var params = {
+            'mobile': mobile,
+            'imageCode': imageCode,
+            'imageCodeId': imageCodeId
+        }
     // TODO 发送短信验证码
+    $.ajax({
+        url:'/passport/sms_code',
+        type:'post',
+        data:JSON.stringify(params),
+        contentType: 'application/json'
+    })
+        .done(function (response) {
+            if (response.errno == '0'){alert(response.errmsg);}
+            else{alert(response.errmsg);}
+        })
+        .fail(function () {
+            alert('服务器超时，请重试！');
+        });
+
 }
 
 // 调用该函数模拟点击左侧按钮
