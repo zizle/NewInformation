@@ -152,21 +152,35 @@ $(function(){
             $("#register-password-err").show();
             return;
         }
-
         // 发起注册请求
+        var params = {
+                'mobile': mobile,
+                'sms_code': smscode,
+                'password': password
+            };
+        $.ajax({
+            url: '/passport/register',
+            type: 'post',
+            data: JSON.stringify(params),
+            contentType:'application/json'
+        })
+        .done(function (response) {
+            if (response.errno == '0'){alert(response.errmsg); location.reload()}
+            else{alert(response.errmsg)}
+        })
+        .fail(function () {alert('服务器超时,请重试!')})
+        })
+});
 
-    })
-})
-
-var imageCodeId = ""
+var imageCodeId = "";
 
 // TODO 生成一个图片验证码的编号，并设置页面中图片验证码img标签的src属性
 // image标签绑定的点击事件
 function generateImageCode() {
     // 生成唯一识别图片的uuid
-    imageCodeId = generateUUID()
+    imageCodeId = generateUUID();
     // 设置image标签中的src的url
-    var url = '/passport/image_code?imageCodeId='+imageCodeId
+    var url = '/passport/image_code?imageCodeId='+imageCodeId;
     // 将url赋值给image标签的src
     $('.get_pic_code').attr('src', url)
 }

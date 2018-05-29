@@ -3,6 +3,7 @@
 from datetime import datetime
 from . import db
 from info import constants
+from werkzeug.security import generate_password_hash, check_password_hash
 
 
 class BaseModel(object):
@@ -87,6 +88,14 @@ class User(BaseModel, db.Model):
             "last_login": self.last_login.strftime("%Y-%m-%d %H:%M:%S"),
         }
         return resp_dict
+
+    @property
+    def password(self):
+        raise AttributeError('can not read!')
+
+    @password.setter
+    def password(self, value):
+        self.password_hash = generate_password_hash(value)
 
 
 class News(BaseModel, db.Model):
