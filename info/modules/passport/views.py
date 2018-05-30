@@ -1,7 +1,7 @@
 # _*_ coding:utf-8 _*_
 
 from . import passport_blue
-from flask import request, abort, make_response, json, jsonify
+from flask import request, abort, make_response, json, jsonify, session
 from info.utils.captcha.captcha import captcha
 from info import redis_store, constants, response_code, db
 import logging
@@ -35,6 +35,10 @@ def login():
     # 对比password
     if not server_user.check_password(client_password):
         return jsonify(errno=response_code.RET.PARAMERR, errmsg='用户名或密码错误')
+    # 写入session
+    session['user_id'] = server_user.id
+    session['nick_name'] = server_user.nick_name
+    session['mobile'] = server_user.mobile
     # 响应情况
     return jsonify(errno=response_code.RET.OK, errmsg='登录成功!')
 
@@ -81,6 +85,10 @@ def register():
     except Exception as e:
         db.session.rollback()
         logging.ERROR(e)
+    # 写入session，状态保持
+    session['user_id'] = user.id
+    session['nick_name'] = user.nick_name
+    session['mobile'] = user.mobile
     return jsonify(errno=response_code.RET.OK, errmsg='恭喜！注册成功！')
 
 
