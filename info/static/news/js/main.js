@@ -245,6 +245,19 @@ function sendSMSCode() {
         });
 
 }
+function logout() {
+    $.ajax({
+        url:'/passport/logout',
+        type: 'get'
+    })
+        .done(function (response) {
+            if (response.errno == '0'){alert(response.errmsg); location.reload()}
+            else{alert(response.errmsg)}
+        })
+        .fail(function () {
+            alert('服务器超时，请重试！')
+        })
+}
 
 // 调用该函数模拟点击左侧按钮
 function fnChangeMenu(n) {

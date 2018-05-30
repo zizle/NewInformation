@@ -12,6 +12,21 @@ from info.models import User
 from datetime import datetime
 
 
+@passport_blue.route('/logout', methods=['GET'])
+def logout():
+    """退出登录"""
+    # 清除cookie状态保持
+    try:
+        session.pop('user_id')
+        session.pop('nick_name')
+        session.pop('mobile')
+    except Exception as e:
+        logging.ERROR(e)
+        return jsonify(errno=response_code.RET.SESSIONERR, errmsg='退出失败')
+    # 响应结果
+    return jsonify(errno=response_code.RET.OK, errmsg='您已退出！')
+
+
 @passport_blue.route('/login', methods=['POST'])
 def login():
     """用户登录"""
