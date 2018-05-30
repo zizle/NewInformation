@@ -3,7 +3,7 @@ from flask import Flask
 from config import configs
 from flask_sqlalchemy import SQLAlchemy
 from redis import StrictRedis
-from flask_wtf.csrf import CSRFProtect
+from flask_wtf.csrf import CSRFProtect, generate_csrf
 from flask_session import Session
 import logging
 from logging.handlers import RotatingFileHandler
@@ -16,7 +16,6 @@ def setup_log(level):
     # 创建日志记录器, 指明日志保存的路径, 每个日志文件的最大大小,保存日志的文件上限个数
     file_log_handler = RotatingFileHandler('logs/log', maxBytes=1024*1024*100, backupCount=10)
     # 创建日志记录的格式
-    # formatter = logging.Formatter('%(levelname)s %(filename)s:%(lineno)d %(message)s')
     formatter = logging.Formatter('%(asctime)s - %(filename)s[line:%(lineno)d] - %(levelname)s: %(message)s')
     # 为刚创建的日志记录器设置日志格式
     file_log_handler.setFormatter(formatter)
@@ -42,7 +41,13 @@ def create_app(config_name):
     global redis_store
     redis_store = StrictRedis(host=configs[config_name].REDIS_HOST, port=configs[config_name].REDIS_PORT)
     # 开启csrf保护
-    # CSRFProtect(app)
+    CSRFProtect(app)
+
+    # 在每次请求之后响应向浏览器写入cookie(csrf_token)
+    @app.after_request
+    def setup_csrf(response):
+        response.set_cookie('csrf_token', generate_csrf())
+        return response
     Session(app)
     # 导入蓝图，避免过早导入蓝图失败(有些参数还没创建)，app注册的地方导入
     from info.modules.index import index_blue
