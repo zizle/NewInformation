@@ -97,6 +97,12 @@ class User(BaseModel, db.Model):
     def password(self, value):
         self.password_hash = generate_password_hash(value)
 
+    def check_password(self, password):
+        """登录时校验密码"""
+        # 传入密码明文做对比
+        return check_password_hash(self.password_hash, password)
+
+
 
 class News(BaseModel, db.Model):
     """新闻"""

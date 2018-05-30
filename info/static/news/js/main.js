@@ -118,15 +118,31 @@ $(function(){
             $("#login-password-err").show();
             return;
         }
-
         // 发起登录请求
-    })
+        var params = {
+            'mobile': mobile,
+            'password': password
+        };
+        $.ajax({
+            url: '/passport/login',
+            type: 'post',
+            data: JSON.stringify(params),
+            contentType: 'application/json'
+        })
+            .done(function (response) {
+                if(response.errno == '0'){alert(response.errmsg); location.reload();}
+                else{alert(response.errmsg);}
+            })
+            .fail(function () {
+                alert('服务器超时，请重试！');
+            })
+    });
 
 
     // TODO 注册按钮点击
     $(".register_form_con").submit(function (e) {
         // 阻止默认提交操作
-        e.preventDefault()
+        e.preventDefault();
 
 		// 取到用户输入的内容
         var mobile = $("#register_mobile").val()

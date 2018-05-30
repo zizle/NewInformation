@@ -2,7 +2,7 @@
 
 from flask_script import Manager
 from flask_migrate import Migrate, MigrateCommand
-from info import create_app, db, models
+from info import create_app, db, models  #导入models只是为了迁移时manage可以找到
 
 app = create_app('dev')
 # 创建迁移对象
