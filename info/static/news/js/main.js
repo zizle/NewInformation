@@ -227,7 +227,7 @@ function sendSMSCode() {
             'mobile': mobile,
             'imageCode': imageCode,
             'imageCodeId': imageCodeId
-        }
+        };
     // TODO 发送短信验证码
     $.ajax({
         url:'/passport/sms_code',
@@ -237,8 +237,25 @@ function sendSMSCode() {
         headers: {'X-CSRFToken': getCookie('csrf_token')}
     })
         .done(function (response) {
-            if (response.errno == '0'){alert(response.errmsg);}
-            else{alert(response.errmsg);}
+            if (response.errno == '0'){
+                alert(response.errmsg);
+                var countdown = 60;
+                var timer = setInterval(function () {
+                    if (countdown == 0){
+                        clearInterval(timer);
+                        // 重新请求生成验证码
+                        generateImageCode();
+                        // 重置显示内容
+                        $('.get_code').html('点击获取验证码');
+                        $('.get_code').attr("onclick", "sendSMSCode();");
+                    }else{$('.get_code').html(countdown + '秒后重新获取')}
+                    countdown-=1;
+                }, 1000)
+            }
+            else{alert(response.errmsg);
+                generateImageCode();
+                $('.get_code').attr("onclick", "sendSMSCode();")
+                }
         })
         .fail(function () {
             alert('服务器超时，请重试！');

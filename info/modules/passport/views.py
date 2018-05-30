@@ -78,11 +78,11 @@ def register():
     # 对比短信验证码
     try:
         # 从redis取出短信验证码
-        server_sms_code = redis_store.get('SMSCode:'+client_mobile).decode()
+        server_sms_code = redis_store.get('SMSCode:'+client_mobile)
     except Exception as e:
-        logging.ERROR(e)
+        logging.error(e)
         return jsonify(errno=response_code.RET.DBERR, errmsg='数据库读取验证码失败')
-    if server_sms_code != client_sms_code:
+    if server_sms_code.decode() != client_sms_code:
         return jsonify(errno=response_code.RET.PARAMERR, errmsg='短信验证码错误')
     # 通过验证，注册
     # 创建user
@@ -126,12 +126,12 @@ def sms_code():
         # 取到redis中的验证码
         image_code_server = redis_store.get('ImageCode:'+image_code_id)
     except Exception as e:
-        logging.ERROR(e)
+        logging.error(e)
         return jsonify(errno=response_code.RET.DBERR, errmsg='查询验证码错误!')
     if not image_code_server:
         return jsonify(errno=response_code.RET.DBERR, errmsg='验证码已失效!')
     # 验证image_code是否正确
-    if image_code_client.lower() != image_code_client.lower():
+    if image_code_client.lower() != image_code_server.decode().lower():
         return jsonify(errno=response_code.RET.PARAMERR, errmsg='验证码输入错误!')
     # 随机生成6位短信验证码
     sms_code = '%06d' % random.randint(0, 999999)
@@ -147,9 +147,9 @@ def sms_code():
         redis_store.set('SMSCode:'+mobile, sms_code, constants.SMS_CODE_REDIS_EXPIRES)
     except Exception as e:
         logging.ERROR(e)
-        return jsonify(errno=response_code.RET.DBERR, errmsg='短信保存失败!')
+        return jsonify(errno=response_code.RET.DBERR, errmsg='短信码保存失败!')
     # 响应结果
-    return jsonify(errno=response_code.RET.OK, errmsg='短信发送成功!')
+    return jsonify(errno=response_code.RET.OK, errmsg='获取成功!')
 
 
 @passport_blue.route('/image_code', methods=['GET'])
@@ -167,10 +167,12 @@ def image_code():
         # 先保存到redis以便于下次做校验
         redis_store.set('ImageCode:'+image_code_id, text, constants.IMAGE_CODE_REDIS_EXPIRES)
     except Exception as e:
-        logging.DEBUG(e)
+        logging.ERROR(e)
+        return jsonify(errno=response_code.RET.DBERR, errmsg='保存图片验证码失败')
     # 构造响应体
     response = make_response(image)
     # 设置响应头文件类型
     response.headers['Content-Type'] = 'image/jpg'
+    print('图片验证码:', text)
     # 响应给前端
     return response
