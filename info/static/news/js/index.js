@@ -5,6 +5,8 @@ var data_querying = true;   // 是否正在向后台获取数据
 
 
 $(function () {
+    // 请求数据
+    updateNewsData();
     // 首页分类切换
     $('.menu li').click(function () {
         var clickCid = $(this).attr('data-cid')
@@ -43,8 +45,45 @@ $(function () {
             // TODO 判断页数，去更新新闻数据
         }
     })
-})
+});
 
 function updateNewsData() {
     // TODO 更新新闻数据
+    var params = {
+        'cid': currentCid,
+        'page': cur_page
+    };
+    $.ajax({
+        url: '/news_list',
+        type:'get',
+        data: params
+    })
+        .done(function (response) {
+            if (response.errno == '0'){
+                // 清空新闻列表
+                $('.list_con').html('');
+                // 拼接html内容
+                for (var i=0; i<response.data.news_list.length; i++){
+                    var news = response.data.news_list[i];
+                    var user = response.data.user_list[i];
+                    var content = '<li>';
+                    content += '<a href="#" class="news_pic fl"><img src="' + news.index_image_url + '?imageView2/1/w/170/h/170"></a>';
+                    content += '<a href="#" class="news_title fl">' + news.title + '</a>';
+                    content += '<a href="#" class="news_detail fl">' + news.digest + '</a>';
+                    content += '<div class="author_info fl">';
+                    if (user.id){
+                        content += '<div class="author fl"><img src="'
+                            if(user.avatar_url){content += user.avatar_url}
+                            else{content += '../static/news/images/person.png'}
+                        content += '" alt="author"><a href="#">' + user.nick_name + '</a></div>';
+                        }
+                    else{content += '<div class="source fl">来源：' + news.source + '</div>';}
+                    content += '<div class="time fl">' + news.create_time + '</div>';
+                    content += ' </div></li>';
+                    $('.list_con').append(content);}
+            }else {alert(response.errmsg)}
+        })
+        .fail(function () {
+            alert('服务器超时，请重试!')
+        })
 }

@@ -167,7 +167,7 @@ def image_code():
         # 先保存到redis以便于下次做校验
         redis_store.set('ImageCode:'+image_code_id, text, constants.IMAGE_CODE_REDIS_EXPIRES)
     except Exception as e:
-        logging.ERROR(e)
+        logging.error(e)
         return jsonify(errno=response_code.RET.DBERR, errmsg='保存图片验证码失败')
     # 构造响应体
     response = make_response(image)
