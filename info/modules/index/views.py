@@ -3,7 +3,7 @@ from flask import render_template, current_app, session, request, jsonify
 from . import index_blue
 from info.models import User, News
 import logging
-from info import response_code
+from info import response_code, constants
 
 
 @index_blue.route('/favicon.ico', methods=['GET'])
@@ -27,8 +27,17 @@ def index():
             server_user = User.query.get(session_user_id)
         except Exception as e:
             logging.error(e)
+
+    news_clicks = None
+    try:
+        # 点击排行数据渲染
+        news_clicks = News.query.order_by(News.clicks.desc()).limit(constants.CLICK_RANK_MAX_NEWS)
+    except Exception as e:
+        logging.error(e)
+    print(news_clicks)
     context = {
         'user': server_user,
+        'news_clicks': news_clicks
     }
     # 没有登录状态，显示登录/ 注册
     return render_template('index.html', context=context)
@@ -78,7 +87,6 @@ def new_list():
         'news_list': news_list_dict,
         'user_list': user_list_dict
     }
-    print(data)
     # 拿到数据，响应
     return jsonify(errno=response_code.RET.OK, errmsg='OK', data=data)
 
