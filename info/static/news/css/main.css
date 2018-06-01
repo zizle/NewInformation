@@ -6,6 +6,10 @@ body{
     height:59px;
     background:#fff;
     border-bottom:1px solid #ccc;
+    width: 100%;
+    position: fixed;
+    top: 0;
+    left: 0;
 }
 .header{
     width:1200px;
@@ -89,7 +93,7 @@ body{
 .conter_con{
     width:1200px;
     overflow:hidden;
-    margin:20px auto 0;
+    margin:79px auto 0;
 }
 
 .list_con{
@@ -493,6 +497,15 @@ body{
     line-height:14px;
     font-size:14px;
     color:#999;
+}
+.forget_psd{
+    position:absolute;
+    left:20px;
+    top:230px;
+    width:110px;
+    line-height:14px;
+    font-size:10px;
+    color:#a3c3ff;
 }
 
 .input_sub{

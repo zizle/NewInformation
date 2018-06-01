@@ -34,7 +34,6 @@ def index():
         news_clicks = News.query.order_by(News.clicks.desc()).limit(constants.CLICK_RANK_MAX_NEWS)
     except Exception as e:
         logging.error(e)
-    print(news_clicks)
     context = {
         'user': server_user,
         'news_clicks': news_clicks

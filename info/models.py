@@ -103,7 +103,6 @@ class User(BaseModel, db.Model):
         return check_password_hash(self.password_hash, password)
 
 
-
 class News(BaseModel, db.Model):
     """新闻"""
     __tablename__ = "info_news"
