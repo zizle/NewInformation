@@ -22,7 +22,7 @@
 <body>
     <div class="header_con">
         <div class="header">
-            <a href="#" class="logo fl"><img src="../../static/news/images/logo.png" alt="logo"></a>
+            <a href="/" class="logo fl"><img src="../../static/news/images/logo.png" alt="logo"></a>
 
 {#新闻分类展示 重写需包含<ul>标签#}
             {% block category_tag %}
@@ -33,7 +33,7 @@
         {% block user_login_info %}
             {% if context.user %}
             <div class="user_login fr">
-                <img src="{% if context.user.avatar_url %}{{ context.user.avatar_url }}{% endif %}../static/news/images/person01.png" class="lgin_pic">
+                <img src="{% if context.user.avatar_url %}{{ context.user.avatar_url }}{% endif %}../../../static/news/images/cat.png" class="lgin_pic">
                 <a href="#">{{ context.user.nick_name }}</a>
                 <a href="javascript:;" onclick="logout()">退出</a>
             </div>

@@ -77,9 +77,9 @@ function updateNewsData() {
                     var news = response.data.news_list[i];
                     var user = response.data.user_list[i];
                     var content = '<li>';
-                    content += '<a href="#" class="news_pic fl"><img src="' + news.index_image_url + '?imageView2/1/w/170/h/170"></a>';
-                    content += '<a href="#" class="news_title fl">' + news.title + '</a>';
-                    content += '<a href="#" class="news_detail fl">' + news.digest + '</a>';
+                    content += '<a href="/news/detail/'+news.id+'" class="news_pic fl"><img src="' + news.index_image_url + '?imageView2/1/w/170/h/170"></a>';
+                    content += '<a href="/news/detail/'+news.id+'" class="news_title fl">' + news.title + '</a>';
+                    content += '<a href="/news/detail/'+news.id+'" class="news_detail fl">' + news.digest + '</a>';
                     content += '<div class="author_info fl">';
                     if (user.id){
                         content += '<div class="author fl"><img src="'

@@ -4,11 +4,6 @@
     <title>首页-新经资讯</title>
 {% endblock %}
 
-    <link rel="stylesheet" type="text/css" href="../../static/news/css/reset.css">
-    <link rel="stylesheet" type="text/css" href="../../static/news/css/main.css">
-    <script type="text/javascript" src="../../static/news/js/jquery-1.12.4.min.js"></script>
-    <script type="text/javascript" src="../../static/news/js/main.js"></script>
-
 {% block js_file %}
     <script type="text/javascript" src="../../static/news/js/index.js"></script>
 {% endblock %}
@@ -18,8 +13,10 @@
         {% for category in context.categories %}
             {% if loop.index == 1 %}
                 <li class="active" data-cid="{{ loop.index }}"><a href="javascript:;">{{ category.name }}</a></li>
-            {% endif %}
+            {% else %}
                 <li data-cid="{{ loop.index }}"><a href="javascript:;">{{ category.name }}</a></li>
+            {% endif %}
+
         {% endfor %}
     </ul>
 {% endblock %}
@@ -37,7 +34,7 @@
             </div>
             <ul class="rank_list">
                 {% for news in context.news_clicks %}
-                    <li><span class="{{ loop.index | rank }}">{{ loop.index }}</span><a href="#">{{ news.title }}</a></li>
+                    <li><span class="{{ loop.index | rank }}">{{ loop.index }}</span><a href="/news/detail/{{ news.id }}">{{ news.title }}</a></li>
                 {% endfor %}
             </ul>
         </div>

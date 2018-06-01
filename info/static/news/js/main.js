@@ -180,7 +180,7 @@ $(function(){
             type: 'post',
             data: JSON.stringify(params),
             contentType:'application/json',
-            headers: {'X-CSRFToken': getCookie('abc')}
+            headers: {'X-CSRFToken': getCookie('csrf_token')}
         })
         .done(function (response) {
             if (response.errno == '0'){alert(response.errmsg); location.reload()}
@@ -234,7 +234,7 @@ function sendSMSCode() {
         type:'post',
         data:JSON.stringify(params),
         contentType: 'application/json',
-        headers: {'X-CSRFToken': getCookie('abc')}
+        headers: {'X-CSRFToken': getCookie('csrf_token')}
     })
         .done(function (response) {
             if (response.errno == '0'){
