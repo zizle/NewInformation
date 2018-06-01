@@ -21,7 +21,7 @@ def logout():
         session.pop('nick_name')
         session.pop('mobile')
     except Exception as e:
-        logging.ERROR(e)
+        logging.error(e)
         return jsonify(errno=response_code.RET.SESSIONERR, errmsg='退出失败')
     # 响应结果
     return jsonify(errno=response_code.RET.OK, errmsg='您已退出！')
@@ -43,7 +43,7 @@ def login():
         # 根据mobile查询数据库拿出server_user
         server_user = User.query.filter(User.mobile == client_mobile).first()
     except Exception as e:
-        logging.ERROR(e)
+        logging.error(e)
         return jsonify(errno=response_code.RET.DBERR, errmsg='查询用户失败')
     if not server_user:
         return jsonify(errno=response_code.RET.PARAMERR, errmsg='用户名或密码错误')
@@ -99,7 +99,7 @@ def register():
         db.session.commit()
     except Exception as e:
         db.session.rollback()
-        logging.ERROR(e)
+        logging.error(e)
     # 写入session，状态保持
     session['user_id'] = user.id
     session['nick_name'] = user.nick_name
@@ -140,13 +140,13 @@ def sms_code():
     # result = CCP().send_template_sms('15759566200', [sms_code, 3], 1)
     # # 判断发送的结果
     # if result != 0:
-    #     logging.ERROR(result)
+    #     logging.error(result)
     #     return jsonify(errno=response_code.RET.PARAMERR, errmsg='短信发送失败!')
     # # 保存短信码到redis便于下次验证
     try:
         redis_store.set('SMSCode:'+mobile, sms_code, constants.SMS_CODE_REDIS_EXPIRES)
     except Exception as e:
-        logging.ERROR(e)
+        logging.error(e)
         return jsonify(errno=response_code.RET.DBERR, errmsg='短信码保存失败!')
     # 响应结果
     return jsonify(errno=response_code.RET.OK, errmsg='获取成功!')

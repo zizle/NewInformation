@@ -2,56 +2,56 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>首页-新经资讯</title>
-    <link rel="stylesheet" type="text/css" href="../static/news/css/reset.css">
-    <link rel="stylesheet" type="text/css" href="../static/news/css/main.css">
-    <script type="text/javascript" src="../static/news/js/jquery-1.12.4.min.js"></script>
-    <script type="text/javascript" src="../static/news/js/main.js"></script>
-    <script type="text/javascript" src="../static/news/js/index.js"></script>
+
+{#网页标题, 重写时需加上<title>标签#}
+    {% block page_title %}
+
+    {% endblock %}
+
+    <link rel="stylesheet" type="text/css" href="../../static/news/css/reset.css">
+    <link rel="stylesheet" type="text/css" href="../../static/news/css/main.css">
+    <script type="text/javascript" src="../../static/news/js/jquery-1.12.4.min.js"></script>
+    <script type="text/javascript" src="../../static/news/js/main.js"></script>
+
+{#当前页的js文件#}
+{% block js_file %}
+    <script type="text/javascript" src="../../static/news/js/index.js"></script>
+{% endblock %}
+
 </head>
 <body>
-<div class="body_content">
     <div class="header_con">
         <div class="header">
-            <a href="#" class="logo fl"><img src="../static/news/images/logo.png" alt="logo"></a>
-            <ul class="menu fl">
-                <li class="active" data-cid="1"><a href="javascript:;">最新</a></li>
-                <li data-cid="2"><a href="javascript:;">股市</a></li>
-                <li data-cid="3"><a href="javascript:;">债市</a></li>
-                <li data-cid="4"><a href="javascript:;">商品</a></li>
-                <li data-cid="5"><a href="javascript:;">外汇</a></li>
-                <li data-cid="6"><a href="javascript:;">公司</a></li>
-            </ul>
+            <a href="#" class="logo fl"><img src="../../static/news/images/logo.png" alt="logo"></a>
+
+{#新闻分类展示 重写需包含<ul>标签#}
+            {% block category_tag %}
+
+            {% endblock %}
+
+{#用户登录状态与否显示#}
+        {% block user_login_info %}
             {% if context.user %}
-                <div class="user_login fr">
-                    <img src="{% if context.user.avatar_url %}{{ context.user.avatar_url }}{% endif %}../static/news/images/person01.png" class="lgin_pic">
-                    <a href="#">{{ context.user.nick_name }}</a>
-                    <a href="javascript:;" onclick="logout()">退出</a>
-                </div>
+            <div class="user_login fr">
+                <img src="{% if context.user.avatar_url %}{{ context.user.avatar_url }}{% endif %}../static/news/images/person01.png" class="lgin_pic">
+                <a href="#">{{ context.user.nick_name }}</a>
+                <a href="javascript:;" onclick="logout()">退出</a>
+            </div>
             {% else %}
                 <div class="user_btns fr">
                     <a href="javascript:;" class="login_btn">登录</a> / <a href="javascript:;" class="register_btn">注册</a>
                 </div>
             {% endif %}
-        </div>
-    </div>
-    
-    <div class="conter_con">
-        <ul class="list_con fl">
-{#            用ajax局部刷新请求#}
+        {% endblock %}
 
-        </ul>
-        <div class="rank_con fr">
-            <div class="rank_title">
-                <h3>点击排行</h3>
-            </div>
-            <ul class="rank_list">
-                {% for news in context.news_clicks %}
-                    <li><span class="{{ loop.index | rank }}">{{ loop.index }}</span><a href="#">{{ news.title }}</a></li>
-                {% endfor %}
-            </ul>
         </div>
     </div>
+
+{#网页正文展示#}
+    {% block page_content %}
+
+    {% endblock %}
+
     <div class="footer">        
         <div class="footer_links">
             <a href="">关于我们</a>
@@ -85,7 +85,7 @@
                 <div class="input_tip">密码(不少于6位)</div>
                 <div id="login-password-err" class="error_tip">密码不能为空</div>
             </div>
-            <div class="forget_psd"><a href="">忘记密码？</a></div>
+            <div class="forget_psd"><a href="#">忘记密码？</a></div>
             <input type="submit" name="" value="登 录" class="input_sub">
             <div class="down_link">还没有账号？<a href="javascript:;" class="to_register">立即注册</a></div>
         </div>
@@ -107,7 +107,7 @@
             <div class="form_group">
                 <input type="text" name="code_pwd" id="imagecode" class="code_pwd">
                 <div class="input_tip">图形验证码</div>
-                <img src="../static/news/images/pic_code.png" class="get_pic_code" onclick="generateImageCode()">
+                <img src="../../static/news/images/pic_code.png" class="get_pic_code" onclick="generateImageCode()">
                 <div id="register-image-code-err" class="error_tip">图形码不能为空</div>
             </div>
             <div class="form_group">
@@ -131,6 +131,5 @@
         </div>
         <div class="mask"></div>
     </form>
-</div>
 </body>
 </html>

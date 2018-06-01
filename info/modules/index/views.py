@@ -1,7 +1,7 @@
 # _*_ coding:utf-8 _*_
 from flask import render_template, current_app, session, request, jsonify, abort
 from . import index_blue
-from info.models import User, News
+from info.models import User, News, Category
 import logging
 from info import response_code, constants
 
@@ -34,12 +34,21 @@ def index():
         news_clicks = News.query.order_by(News.clicks.desc()).limit(constants.CLICK_RANK_MAX_NEWS)
     except Exception as e:
         logging.error(e)
+
+    # 首页新闻分类标签查询
+    categories = None
+    try:
+        categories = Category.query.all()
+    except Exception as e:
+        logging.error(e)
+
     context = {
         'user': server_user,
-        'news_clicks': news_clicks
+        'news_clicks': news_clicks,
+        'categories': categories
     }
     # 没有登录状态，显示登录/ 注册
-    return render_template('index.html', context=context)
+    return render_template('news/index.html', context=context)
 
 
 @index_blue.route('/news_list', methods=['GET'])
