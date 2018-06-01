@@ -1,5 +1,5 @@
 # _*_ coding:utf-8 _*_
-from flask import render_template, current_app, session, request, jsonify
+from flask import render_template, current_app, session, request, jsonify, abort
 from . import index_blue
 from info.models import User, News
 import logging
@@ -56,8 +56,7 @@ def new_list():
         per_page = int(per_page)
     except Exception as e:
         logging.error(e)
-        return '404 can not found!'
-    sql_news = None
+        abort(404)
     try:
         # 根据参数查询数据库
         if cid == 1:
@@ -67,6 +66,10 @@ def new_list():
     except Exception as e:
         logging.error(e)
         return jsonify(errno=response_code.RET.DBERR, errmsg='获取数据失败')
+    # 当前页数
+    cur_page = paginate.page
+    # 总页数
+    total_page = paginate.pages
     # 转换数据类型
     news_list = paginate.items
     news_list_dict = []
@@ -84,7 +87,9 @@ def new_list():
     # 响应数据
     data = {
         'news_list': news_list_dict,
-        'user_list': user_list_dict
+        'user_list': user_list_dict,
+        'cur_page': cur_page,
+        'total_page': total_page
     }
     # 拿到数据，响应
     return jsonify(errno=response_code.RET.OK, errmsg='OK', data=data)
