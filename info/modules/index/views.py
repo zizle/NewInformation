@@ -1,9 +1,10 @@
 # _*_ coding:utf-8 _*_
-from flask import render_template, current_app, session, request, jsonify, abort
+from flask import render_template, current_app, g, request, jsonify, abort
 from . import index_blue
 from info.models import User, News, Category
 import logging
 from info import response_code, constants
+from info.utils.tools import user_login_data
 
 
 @index_blue.route('/favicon.ico', methods=['GET'])
@@ -13,20 +14,13 @@ def favicon():
 
 
 @index_blue.route('/')
+@user_login_data
 def index():
     """主页"""
     # 登录状态展示
     # 判断登录状态保持
-    session_user_id = session.get('user_id')
-    session_user_mobile = session.get('mobile')
-    session_user_nick_name = session.get('nick_name')
-    # 校验参数, 查询用户数据，展示
-    server_user = None
-    if session_user_id and session_user_mobile and session_user_nick_name:
-        try:
-            server_user = User.query.get(session_user_id)
-        except Exception as e:
-            logging.error(e)
+    # 从g变量取出user
+    server_user = g.user
 
     news_clicks = None
     try:

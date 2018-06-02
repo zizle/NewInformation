@@ -7,7 +7,6 @@ from flask_wtf.csrf import CSRFProtect, generate_csrf
 from flask_session import Session
 import logging
 from logging.handlers import RotatingFileHandler
-from info.utils import tools
 
 
 def setup_log(level):
@@ -49,8 +48,9 @@ def create_app(config_name):
     def setup_csrf(response):
         response.set_cookie('csrf_token', generate_csrf())
         return response
-    # 加入自定义模板过滤器
-    app.add_template_filter(tools.do_rank, 'rank')
+    # 加入自定义模板过滤器, 避免过早导入有些变量还没创建
+    from info.utils.tools import do_rank
+    app.add_template_filter(do_rank, 'rank')
     Session(app)
     # 导入蓝图，避免过早导入蓝图失败(有些参数还没创建)，app注册的地方导入
     from info.modules.index import index_blue
