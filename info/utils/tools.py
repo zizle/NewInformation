@@ -2,6 +2,7 @@
 from flask import session, g
 from info.models import User
 import logging
+from functools import wraps
 
 
 def do_rank(num):
@@ -18,6 +19,7 @@ def do_rank(num):
 
 # 定义装饰器装饰视图函数，先检测用户的登录状态
 def user_login_data(views_func):
+    @wraps(views_func)
     def wrapper(*args, **kwargs):
         """检测用户当前登录状态"""
         session_user_id = session.get('user_id')

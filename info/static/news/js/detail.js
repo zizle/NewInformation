@@ -9,14 +9,33 @@ $(function(){
     // 打开登录框
     $('.comment_form_logout').click(function () {
         $('.login_form_con').show();
-    })
+    });
 
     // 收藏
     $(".collection").click(function () {
-
-       
-    })
-
+        $.ajax({
+            url: '/news/collected',
+            type: 'post',
+            data: JSON.stringify({'news_id': $(this).attr('data-newid')}),
+            contentType: 'application/json',
+            headers: {'X-CSRFToken': getCookie('csrf_token')}
+        })
+            .done(function (response) {
+                if (response.errno == '0'){
+                    alert(response.errmsg)
+                    $('.collection').hide();
+                    $('.collected').show();
+                }
+                else if (response.errno == '4101'){
+                    $('.login_form_con').show();
+                }else {
+                    alert(response.errmsg)
+                }
+            })
+            .fail(function () {
+                alert('服务器超时，请重试！')
+            })
+    });
     // 取消收藏
     $(".collected").click(function () {
 
