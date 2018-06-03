@@ -57,15 +57,36 @@ $(function(){
             .fail(function () {
                 alert('服务器超时，请重试!')
             })
-
-     
     })
 
         // 评论提交
     $(".comment_form").submit(function (e) {
         e.preventDefault();
-
-    })
+        var params = {
+            'comment_content': $('.comment_input').val(),
+            'news_id': $(this).attr('data-newsid')
+        }
+        $.ajax({
+            url:'/news/comment_news',
+            type:'post',
+            data:JSON.stringify(params),
+            contentType:'application/json',
+            headers:{'X-CSRFToken': getCookie('csrf_token')}
+        })
+            .done(function (response) {
+                if (response.errno == '4101'){
+                    $('.login_form_con').show()
+                }
+                else if (response.errno == '0'){
+                    alert(response.errmsg);
+                    alert('拼接html');
+                }
+                else{alert(response.errmsg)}
+            })
+            .fail(function () {
+                alert('服务器超时，请重试!')
+            })
+    });
 
     $('.comment_list_con').delegate('a,input','click',function(){
 

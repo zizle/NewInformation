@@ -31,25 +31,79 @@
         <a href="javascript:;" class="collection block-center" data-newid="{{ context.news.id }}" style="display: {% if context.is_collected %} none{% else %} block {% endif %};">收藏</a>
 {#新闻详情的渲染#}
 
-
-        <div class="comment_form_logout">
-            登录发表你的评论
-        </div>
-
-        <form action="" class="comment_form">
-            <div class="person_pic">
-                <img src="../../static/news/images/cat.jpg" alt="用户图标">
+{#评论框的渲染#}
+        {% if context.user %}
+            <form action="" class="comment_form" data-newsid="{{ context.news.id }}">
+                <div class="person_pic">
+                    <img src="{% if context.user.avatar_url %}{{ context.user.avatar_url }}{% else %}../../static/news/images/cat.jpg{% endif %}" alt="用户图标">
+                </div>
+                    <textarea placeholder="请发表您的评论" class="comment_input"></textarea>
+                <input type="submit" name="" value="评 论" class="comment_sub">
+            </form>
+        {% else %}
+            <div class="comment_form_logout">
+                登录发表你的评论
             </div>
-            <textarea placeholder="请发表您的评论" class="comment_input"></textarea>
-            <input type="submit" name="" value="评 论" class="comment_sub">
-        </form>
-
-
+        {% endif %}
         <div class="comment_count">
             4条评论
         </div>
+{#评论框的渲染#}
+
+{#评论框原代码#}
+{#        <div class="comment_form_logout">#}
+{#            登录发表你的评论#}
+{#        </div>#}
+{#        <form action="" class="comment_form">#}
+{#            <div class="person_pic">#}
+{#                <img src="../../static/news/images/cat.jpg" alt="用户图标">#}
+{#            </div>#}
+{#                <textarea placeholder="请发表您的评论" class="comment_input"></textarea>#}
+{#            <input type="submit" name="" value="评 论" class="comment_sub">#}
+{#        </form>#}
+{#        <div class="comment_count">#}
+{#            4条评论#}
+{#        </div>#}
+{#评论框原代码#}
 
         <div class="comment_list_con">
+{#刚评论内容的渲染用js动态加载，已有评论，模板渲染#}
+        {% for comment in context.comment_lists %}
+            <div class="comment_list">
+            {% if comment.parent_id %}
+                <div class="reply_text_con fl">
+                    <div class="user_name2">{{ comment.user.nick_name }}</div>
+                    <div class="reply_text">
+                        {{ comment.content }}
+                    </div>
+                </div>
+                <div class="comment_time fl">{{ comment.create_time }}</div>
+            {% else %}
+                <div class="person_pic fl">
+                    <img src="{% if comment.user.avatar_url %}{{ comment.user.avatar_url }}{% else %}../../static/news/images/cat.jpg{% endif %}" alt="用户图标">
+                </div>
+                <div class="user_name fl">{{ comment.user.nick_name }}</div>
+                <div class="comment_text fl">
+                    {{ comment.content }}
+                </div>
+                <div class="comment_time fl">{{ comment.create_time }}</div>
+            {% endif %}
+
+                <a href="javascript:;" class="comment_up has_comment_up fr">1</a>
+                <a href="javascript:;" class="comment_reply fr">回复</a>
+
+
+                <from class="reply_form fl">
+                    <textarea  class="reply_input"></textarea>
+                    <input type="submit" name="" value="回复" class="reply_sub fr">
+                    <input type="reset" name="" value="取消" class="reply_cancel fr">
+                </from>
+            </div>
+
+        {% endfor %}
+
+
+{#原评论内筒模板代码#}
             <div class="comment_list">
                 <div class="person_pic fl">
                     <img src="../../static/news/images/worm.jpg" alt="用户图标">
@@ -128,9 +182,10 @@
                 </from>
             </div>
         </div>
-
-
         </div>
+{#原评论内筒模板代码#}
+
+{#用户信息详情#}
         <div class="rank_con fr">
             <div class="author_card">
                 <a href="#" class="author_pic"><img src="../../static/news/images/user_pic.png" alt="author_pic"></a>
@@ -141,6 +196,7 @@
                 <a href="javascript:;" class="focus fr">关注</a>
                 <a href="javascript:;" class="focused fr"><span class="out">已关注</span><span class="over">取消关注</span></a>
             </div>
+{#用户信息详情#}
 
 {#点击排行的渲染#}
             <div class="rank_title">
@@ -152,14 +208,14 @@
                 {% endfor %}
 {#点击排行的渲染#}
 
-{#原模板代码#}
+{#原点击排行模板代码#}
 {#                <li><span class="first">1</span><a href="#">势如破竹！人民币再度连闯四道关口 在岸、离岸双双升破6.42</a></li>#}
 {#                <li><span class="second">2</span><a href="#">凛冬已至，还有多少银行人在假装干银行</a></li>#}
 {#                <li><span class="third">3</span><a href="#">人民日报：部分城市楼市放松限制引关注，楼市调控不会“拉抽屉”</a></li>#}
 {#                <li><span>4</span><a href="#">势如破竹！人民币再度连闯四道关口 在岸、离岸双双升破6.42</a></li>#}
 {#                <li><span>5</span><a href="#">凛冬已至，还有多少银行人在假装干银行</a></li>#}
 {#                <li><span>6</span><a href="#">人民日报：部分城市楼市放松限制引关注，楼市调控不会“拉抽屉”</a></li>#}
-{#原模板代码#}
+{#原点击排行模板代码#}
             </ul>
         </div>
     </div>
