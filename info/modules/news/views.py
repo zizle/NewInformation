@@ -80,9 +80,9 @@ def cancel_collected():
 @user_login_data
 def news_detail(news_id):
     """新闻详情页"""
-    # 查询用户的登录状态(装饰器实现)，取出装饰器内g保存的user
+    # 1.查询用户的登录状态(装饰器实现)，取出装饰器内g保存的user
     user = g.user
-    # 查询新闻
+    # 2.查询新闻
     news = None
     try:
         news = News.query.get(news_id)
@@ -100,13 +100,22 @@ def news_detail(news_id):
     # 默认为未收藏
     is_collected = False
     if user:
-        # 查询用户的收藏新闻
+        # 3 查询当前用户的收藏新闻
         user_collections = user.collection_news
         if news in user_collections:
             is_collected = True
+
+    # 4. 查询点击排行
+    news_clicks = []
+    try:
+        news_clicks = News.query.order_by(News.clicks.desc()).limit(6)
+    except Exception as e:
+        logging.error(e)
+
     context = {
         'user': user,
         'news': news.to_dict(),
-        'is_collected': is_collected
+        'is_collected': is_collected,
+        'news_clicks': news_clicks
     }
     return render_template('news/detail.html', context=context)

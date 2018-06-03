@@ -12,6 +12,8 @@
     <div class="conter_con">
         <div class="detail_con fl">
             <h3>{{ context.news.title }}</h3>
+
+{#新闻详情的渲染#}
             <div class="detail_about clearfix">
                 <span class="time_souce fl">{{ context.news.create_time }} 来源:
                     {% if context.news.author %}
@@ -27,10 +29,9 @@
 
         <a href="javascript:;" class="collected block-center" data-newid="{{ context.news.id }}" style="display: {% if context.is_collected %} block{% else %} none {% endif %};"><span class="out">已收藏</span><span class="over">取消收藏</span></a>
         <a href="javascript:;" class="collection block-center" data-newid="{{ context.news.id }}" style="display: {% if context.is_collected %} none{% else %} block {% endif %};">收藏</a>
+{#新闻详情的渲染#}
 
 
-
-{#哈哈哈哈哈哈哈哈哈#}
         <div class="comment_form_logout">
             登录发表你的评论
         </div>
@@ -140,16 +141,25 @@
                 <a href="javascript:;" class="focus fr">关注</a>
                 <a href="javascript:;" class="focused fr"><span class="out">已关注</span><span class="over">取消关注</span></a>
             </div>
+
+{#点击排行的渲染#}
             <div class="rank_title">
                 <h3>点击排行</h3>
             </div>
             <ul class="rank_list">
-                <li><span class="first">1</span><a href="#">势如破竹！人民币再度连闯四道关口 在岸、离岸双双升破6.42</a></li>
-                <li><span class="second">2</span><a href="#">凛冬已至，还有多少银行人在假装干银行</a></li>
-                <li><span class="third">3</span><a href="#">人民日报：部分城市楼市放松限制引关注，楼市调控不会“拉抽屉”</a></li>
-                <li><span>4</span><a href="#">势如破竹！人民币再度连闯四道关口 在岸、离岸双双升破6.42</a></li>
-                <li><span>5</span><a href="#">凛冬已至，还有多少银行人在假装干银行</a></li>
-                <li><span>6</span><a href="#">人民日报：部分城市楼市放松限制引关注，楼市调控不会“拉抽屉”</a></li>
+                {% for news in context.news_clicks %}
+                    <li><span class="{{ loop.index | rank }}">{{ loop.index }}</span><a href="#">{{ news.title }}</a></li>
+                {% endfor %}
+{#点击排行的渲染#}
+
+{#原模板代码#}
+{#                <li><span class="first">1</span><a href="#">势如破竹！人民币再度连闯四道关口 在岸、离岸双双升破6.42</a></li>#}
+{#                <li><span class="second">2</span><a href="#">凛冬已至，还有多少银行人在假装干银行</a></li>#}
+{#                <li><span class="third">3</span><a href="#">人民日报：部分城市楼市放松限制引关注，楼市调控不会“拉抽屉”</a></li>#}
+{#                <li><span>4</span><a href="#">势如破竹！人民币再度连闯四道关口 在岸、离岸双双升破6.42</a></li>#}
+{#                <li><span>5</span><a href="#">凛冬已至，还有多少银行人在假装干银行</a></li>#}
+{#                <li><span>6</span><a href="#">人民日报：部分城市楼市放松限制引关注，楼市调控不会“拉抽屉”</a></li>#}
+{#原模板代码#}
             </ul>
         </div>
     </div>
