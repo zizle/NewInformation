@@ -38,6 +38,25 @@ $(function(){
     });
     // 取消收藏
     $(".collected").click(function () {
+        $.ajax({
+            url: '/news/cancel_collected',
+            type: 'post',
+            data: JSON.stringify({'news_id': $(this).attr('data-newid')}),
+            contentType: 'application/json',
+            headers: {'X-CSRFToken': getCookie('csrf_token')}
+        })
+            .done(function (response) {
+                if (response.errno == '0'){
+                    alert(response.errmsg);
+                    // 隐藏已收藏按钮
+                    $('.collected').hide();
+                    // 显示收藏按钮
+                    $('.collection').show();
+                }
+            })
+            .fail(function () {
+                alert('服务器超时，请重试!')
+            })
 
      
     })

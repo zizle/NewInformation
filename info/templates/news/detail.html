@@ -15,7 +15,7 @@
             <div class="detail_about clearfix">
                 <span class="time_souce fl">{{ context.news.create_time }} 来源:
                     {% if context.news.author %}
-                        <img style="margin:0 5px 0 0" src="{% if context.news.author.avatar_url %}{{ context.news.author.avatar_url }}{% else %}../../../static/news/images/person01.png{% endif %}" alt="头像">{{  context.news.author.nick_name }}
+                        <a href="#"><img src="{% if context.news.author.avatar_url %}{{ context.news.author.avatar_url }}{% else %}../../../static/news/images/person01.png{% endif %}" alt="头像">&nbsp;&nbsp;{{  context.news.author.nick_name }}</a>
                     {% else %}
                         {{ context.news.source }}
                     {% endif %}
@@ -25,25 +25,12 @@
 {#jinja2模板很小心，是自己给的标签<>,;等等符号，要告诉它是safe的#}
             {{ context.news.content | safe }}
 
-        <a href="javascript:;" class="collected block-center" data-newid="{{ context.news.id }}" style="display: {% if context.is_collected %} block
-    {% else %} none {% endif %};"><span class="out">已收藏</span><span class="over">取消收藏</span></a>
-    <a href="javascript:;" class="collection block-center" data-newid="{{ context.news.id }}" style="display: {% if context.is_collected %} none
-            {% else %} block {% endif %};">收藏</a>
-
-{#        {% if context.user %}#}
-{#            {% if context.is_collected %}#}
-{#                <a href="javascript:;" class="collected block-center" style="display: block" data-news_id="{{ context.news.id }}"><span class="out">已收藏</span><span class="over">取消收藏</span></a>#}
-{#            {% else %}#}
-{#                <a href="javascript:;" class="collection block-center" style="display: block" data-news_id="{{ context.news.id }}">收藏</a>#}
-{#            {% endif %}#}
-{#        {% else %}#}
-{#            <a href="javascript:;" class="collection block-center" style="display: " data-news_id="{{ context.news.id }}">收藏</a>#}
-{#        {% endif %}#}
-
-{#        <a href="javascript:;" class="collection block-center">收藏</a>#}
-{#        <a href="javascript:;" class="collected block-center" style="display: none"><span class="out">已收藏</span><span class="over">取消收藏</span></a>#}
+        <a href="javascript:;" class="collected block-center" data-newid="{{ context.news.id }}" style="display: {% if context.is_collected %} block{% else %} none {% endif %};"><span class="out">已收藏</span><span class="over">取消收藏</span></a>
+        <a href="javascript:;" class="collection block-center" data-newid="{{ context.news.id }}" style="display: {% if context.is_collected %} none{% else %} block {% endif %};">收藏</a>
 
 
+
+{#哈哈哈哈哈哈哈哈哈#}
         <div class="comment_form_logout">
             登录发表你的评论
         </div>

@@ -22,7 +22,6 @@ def news_collected():
     # 接收参数news_id
     news_id = request.json.get('news_id')
     # 拿着news_id去查询新闻
-    news = None
     try:
         news = News.query.get(news_id)
     except Exception as e:
@@ -42,6 +41,39 @@ def news_collected():
         logging.error(e)
         return jsonify(errno=response_code.RET.DBERR, errmsg='收藏失败')
     return jsonify(errno=response_code.RET.OK, errmsg='收藏成功')
+
+
+@news_blue.route('/cancel_collected', methods=['POST'])
+@user_login_data
+def cancel_collected():
+    """取消收藏"""
+    # 接收参数, news_id
+    news_id = request.json.get('news_id')
+    try:
+        news_id = int(news_id)
+    except Exception as e:
+        logging.error(e)
+        return jsonify(errno=response_code.RET.PARAMERR, errmsg='参数错误')
+    # 拿着news_id去查询新闻
+    try:
+        news = News.query.filter(News.id == news_id).first()
+    except Exception as e:
+        logging.error(e)
+        return jsonify(errno=response_code.RET.DBERR, errmsg='查询数据库失败')
+    if not news:
+        return jsonify(errno=response_code.RET.NODATA, errmsg='新闻不存在')
+    # 判断news是否在用户收藏新闻列表里面
+    # 用户收藏的新闻列表
+    user_news_collects = g.user.collection_news
+    if news in user_news_collects:
+        user_news_collects.remove(news)
+    # 同步数据库
+    try:
+        db.session.commit()
+    except Exception as e:
+        logging.error(e)
+        return jsonify(errno=response_code.RET.DBERR, errmsg='取消失败!')
+    return jsonify(errno=response_code.RET.OK, errmsg='取消成功!')
 
 
 @news_blue.route('/detail/<news_id>')
