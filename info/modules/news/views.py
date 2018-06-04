@@ -183,8 +183,44 @@ def comment_news():
     return jsonify(errno=response_code.RET.OK, errmsg='评论成功!', data=data)
 
 
-@news_blue.route('/comment_comment')
+@news_blue.route('/comment_comment', methods=['POST'])
 @user_login_data
 def comment_comment():
     """用户回复评论"""
-    pass
+    # 获取当前用户登录状态
+    user = g.user
+    if not user:
+        return jsonify(errno=response_code.RET.SESSIONERR, errmsg='您还未登录')
+    # 接收参数 comment_id, comment_content并校验
+    comment_parent_id = request.json.get('comment_id')
+    comment_content = request.json.get('comment_content')
+    # 由于表new_id不能为空
+    news_id = request.json.get('news_id')
+    try:
+        news_id = int(news_id)
+        comment_parent_id = int(comment_parent_id)
+    except Exception as e:
+        logging.error(e)
+        return jsonify(errno=response_code.RET.PARAMERR, errmsg='参数错误')
+    # if not comment_id:返回评论不存在
+    if not comment_parent_id:
+        return jsonify(errno=response_code.RET.NODATA, errmsg='该评论不存在')
+    # if comment_id 创建子评论
+    children_comment = Comment()
+    children_comment.user_id = user.id
+    # 由于表中设计news_id不能为空, 需要添加
+    children_comment.news_id = news_id
+    children_comment.content = comment_content
+    children_comment.parent_id = comment_parent_id
+    # 同步数据库
+    try:
+        db.session.add(children_comment)
+        db.session.commit()
+    except Exception as e:
+        logging.error(e)
+        return jsonify(errno=response_code.RET.DBERR, errmsg='评论失败!')
+    # 构造响应数据
+    data = {'children_comment': children_comment.to_dict()}
+    # 响应结果
+    return jsonify(errno=response_code.RET.OK, errmsg='评论成功!', data=data)
+

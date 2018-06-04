@@ -11,7 +11,7 @@ $(function(){
         $('.login_form_con').show();
     });
 
-    // 收藏
+    // TODO 收藏
     $(".collection").click(function () {
         $.ajax({
             url: '/news/collected',
@@ -36,7 +36,7 @@ $(function(){
                 alert('服务器超时，请重试！')
             })
     });
-    // 取消收藏
+    // TODO 取消收藏
     $(".collected").click(function () {
         $.ajax({
             url: '/news/cancel_collected',
@@ -59,7 +59,7 @@ $(function(){
             })
     });
 
-    // 评论提交
+    // TODO 评论新闻
     $(".comment_form").submit(function (e) {
         e.preventDefault();
         var params = {
@@ -101,7 +101,7 @@ $(function(){
                     comment_html += '</div>';
                     comment_html += '<a href="javascript:;" class="comment_up has_comment_up fr">' + comment.id + '</a>';
                     comment_html += '<a href="javascript:;" class="comment_reply fr">回复</a>';
-                    comment_html += '<from class="reply_form fl">';
+                    comment_html += '<from class="reply_form fl" data-newsid="'+comment.news_id+'" data-commentid="'+comment.id+'">';
                     comment_html += '<textarea class="reply_input"></textarea>';
                     comment_html += '<input type="submit" name="" value="回复" class="reply_sub fr">';
                     comment_html += '<input type="reset" name="" value="取消" class="reply_cancel fr">';
@@ -110,7 +110,7 @@ $(function(){
                     $('.comment_list_con').prepend(comment_html);
                     // 输入框失去焦点
                     $('.comment_sub').blur();
-                    // 清空输入框内筒
+                    // 清空输入框内容
                     $('.comment_input').val('');
                 }
                 else{alert(response.errmsg)}
@@ -145,12 +145,75 @@ $(function(){
                 $this.addClass('has_comment_up')
             }
         }
-
+        // TODO 回复评论
         if(sHandler.indexOf('reply_sub')>=0)
         {
-            alert('回复评论')
+            // 获取html数据, 构造参数
+            var $this = $(this);
+            var params = {
+                'news_id': $this.parent().attr('data-newsid'),
+                'comment_id': $this.parent().attr('data-commentid'),
+                'comment_content': $this.prev().val()
+                };
+            $.ajax({
+                url:'/news/comment_comment',
+                type:'post',
+                contentType:'application/json',
+                data:JSON.stringify(params),
+                headers:{'X-CSRFToken': getCookie('csrf_token')}
+            })
+                .done(function (response) {
+                    if (response.errno == '4101'){
+                        $('.login_form_con').show()
+                    }
+                    else if (response.errno == '0'){
+                        alert(response.errmsg);
+                        // 接收data
+                        var comment_user = response.data.children_comment.user;
+                        var comment = response.data.children_comment;
+                        // 拼接评论的回复html
+                        var comment_html = '';
+                        comment_html += '<div class="comment_list">';
+                        comment_html += '<div class="person_pic fl">';
+                        if (comment_user.avatar_url) {
+                            comment_html += '<img src="' + comment_user.avatar_url + '" alt="用户图标">'
+                        }else {
+                            comment_html += '<img src="../../static/news/images/cat.png" alt="用户图标">'
+                        }
+                        comment_html += '</div>';
+                        comment_html += '<div class="user_name fl">' + comment_user.nick_name + '</div>';
+                        comment_html += '<div class="comment_text fl">';
+                        comment_html += comment.content;
+                        comment_html += '</div>';
+                        comment_html += '<div class="reply_text_con fl">';
+                        comment_html += '<div class="user_name2">' + comment.parent.user.nick_name + '</div>';
+                        comment_html += '<div class="reply_text">';
+                        comment_html += comment.parent.content;
+                        comment_html += '</div>';
+                        comment_html += '</div>';
+                        comment_html += '<div class="comment_time fl">' + comment.create_time + '</div>';
+                        comment_html += '<a href="javascript:;" class="comment_up fr" data-commentid="' + comment.id + '" data-newsid="' + comment.news_id + '">赞</a>';
+                        comment_html += '<a href="javascript:;" class="comment_reply fr">回复</a>';
+                        comment_html += '<form class="reply_form fl" data-commentid="' + comment.id + '" data-newsid="' + comment.news_id + '">';
+                        comment_html += '<textarea class="reply_input"></textarea>';
+                        comment_html += '<input type="button" value="回复" class="reply_sub fr">';
+                        comment_html += '<input type="reset" name="" value="取消" class="reply_cancel fr">';
+                        comment_html += '</form>';
+                        comment_html += '</div>';
+                        // 添加到父评论之前
+                        $(".comment_list_con").prepend(comment_html);
+                        // 请空输入框
+                        $this.prev().val('');
+                        // 关闭
+                        $this.parent().hide()
+                    }
+                    else{alert(response.errmsg)}
+                })
+                .fail(function () {
+                    alert('服务器超时，请重试!')
+                })
         }
-    })
+    });
 
         // 关注当前新闻作者
     $(".focus").click(function () {
