@@ -51,7 +51,7 @@ def news_detail(news_id):
     # 用当前news_id查询评论内容
     comments = []
     try:
-        comments = Comment.query.filter(Comment.news_id == news_id).all()
+        comments = Comment.query.filter(Comment.news_id == news_id).order_by(Comment.create_time.desc()).all()
     except Exception as e:
         logging.error(e)
     # 将所有评论to_dict()置于列表中
@@ -170,12 +170,21 @@ def comment_news():
     news_comment.user_id = user.id
     news_comment.news_id = news_id
     news_comment.content = comment_content
-    # try:
-    #     # 同步数据库
-    #     # db.session.add(news_comment)
-    #     # db.session.commit()
-    # except Exception as e:
-    #     logging.error(e)
-    #     return jsonify(errno=response_code.RET.DBERR, errmsg='评论失败!')
+    try:
+        # 同步数据库
+        db.session.add(news_comment)
+        db.session.commit()
+    except Exception as e:
+        logging.error(e)
+        return jsonify(errno=response_code.RET.DBERR, errmsg='评论失败!')
+    # 构造响应数据
+    data = {'comment': news_comment.to_dict()}
     # 响应结果
-    return jsonify(errno=response_code.RET.OK, errmsg='评论成功!')
+    return jsonify(errno=response_code.RET.OK, errmsg='评论成功!', data=data)
+
+
+@news_blue.route('/comment_comment')
+@user_login_data
+def comment_comment():
+    """用户回复评论"""
+    pass

@@ -57,15 +57,15 @@ $(function(){
             .fail(function () {
                 alert('服务器超时，请重试!')
             })
-    })
+    });
 
-        // 评论提交
+    // 评论提交
     $(".comment_form").submit(function (e) {
         e.preventDefault();
         var params = {
             'comment_content': $('.comment_input').val(),
             'news_id': $(this).attr('data-newsid')
-        }
+        };
         $.ajax({
             url:'/news/comment_news',
             type:'post',
@@ -79,7 +79,39 @@ $(function(){
                 }
                 else if (response.errno == '0'){
                     alert(response.errmsg);
-                    alert('拼接html');
+                    // 接收响应数据
+                    var comment_user = response.data.comment.user;
+                    var comment = response.data.comment;
+                    // 拼接评论内容html
+                    var comment_html = '';
+                    comment_html += '<div class="comment_list">';
+                    comment_html += '<div class="person_pic fl">';
+                    comment_html += '<img src="';
+                        if (comment_user.avatar_url){comment_html += comment_user.avatar_url}
+                        else{comment_html += '../../static/news/images/cat.jpg'}
+                    comment_html += '" alt="用户图标"></div>';
+                    comment_html += '<div class="user_name fl">';
+                    comment_html += comment_user.nick_name;
+                    comment_html += '</div>';
+                    comment_html += '<div class="comment_text fl">';
+                    comment_html += comment.content;
+                    comment_html += '</div>';
+                    comment_html += '<div class="comment_time fl">';
+                    comment_html += comment.create_time;
+                    comment_html += '</div>';
+                    comment_html += '<a href="javascript:;" class="comment_up has_comment_up fr">' + comment.id + '</a>';
+                    comment_html += '<a href="javascript:;" class="comment_reply fr">回复</a>';
+                    comment_html += '<from class="reply_form fl">';
+                    comment_html += '<textarea class="reply_input"></textarea>';
+                    comment_html += '<input type="submit" name="" value="回复" class="reply_sub fr">';
+                    comment_html += '<input type="reset" name="" value="取消" class="reply_cancel fr">';
+                    comment_html += '</from></div>';
+                    // 追加在当前所有评论的前面，动态更新
+                    $('.comment_list_con').prepend(comment_html);
+                    // 输入框失去焦点
+                    $('.comment_sub').blur();
+                    // 清空输入框内筒
+                    $('.comment_input').val('');
                 }
                 else{alert(response.errmsg)}
             })
