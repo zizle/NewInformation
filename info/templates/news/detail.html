@@ -17,7 +17,7 @@
             <div class="detail_about clearfix">
                 <span class="time_souce fl">{{ context.news.create_time }} 来源:
                     {% if context.news.author %}
-                        <a href="#"><img src="{% if context.news.author.avatar_url %}{{ context.news.author.avatar_url }}{% else %}../../../static/news/images/person01.png{% endif %}" alt="头像">&nbsp;&nbsp;{{  context.news.author.nick_name }}</a>
+                        <a href="#"><img src="{% if context.news.author.avatar_url %}{{ context.news.author.avatar_url }}{% else %}../../../static/news/images/cat.png{% endif %}" alt="头像">&nbsp;&nbsp;{{  context.news.author.nick_name }}</a>
                     {% else %}
                         {{ context.news.source }}
                     {% endif %}
@@ -46,7 +46,8 @@
             </div>
         {% endif %}
         <div class="comment_count">
-            4条评论
+{#评论条数#}
+            {{ context.news.comments_count }}条评论
         </div>
 {#评论框的渲染#}
 
