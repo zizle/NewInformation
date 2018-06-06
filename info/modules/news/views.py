@@ -1,7 +1,7 @@
 # _*_ coding:utf-8 _*_
 from . import news_blue
 from flask import render_template, g, request, jsonify, abort
-from info.models import News, Comment
+from info.models import News, Comment, CommentLike
 from info import response_code, db
 import logging
 from info.utils.tools import user_login_data
@@ -35,11 +35,17 @@ def news_detail(news_id):
         logging.error(e)
     # 默认为未收藏
     is_collected = False
+    # 默认用户从没有点过任何赞
+    user_like_comment_ids = []
     if user:
         # 3 查询当前用户的收藏新闻
         user_collections = user.collection_news
         if news in user_collections:
             is_collected = True
+        # 查询当前用户点过的所有赞
+        user_like_comments = CommentLike.query.filter(CommentLike.user_id==user.id).all()
+        # 列表生成式得到这些赞对应的评论id
+        user_like_comment_ids = [user_like_comment.comment_id for user_like_comment in user_like_comments ]
 
     # 4. 查询点击排行
     news_clicks = []
@@ -57,7 +63,13 @@ def news_detail(news_id):
     # 将所有评论to_dict()置于列表中
     comment_lists = []
     for comment in comments:
-        comment_lists.append(comment.to_dict())
+        comment_dict = comment.to_dict()
+        # 添加标记当前用户是否点赞过这条新闻的这条赞 默认未点赞
+        comment_dict['is_like'] = False
+        # 当前评论id 在用户点过赞的评论id列表中 就是点赞
+        if comment.id in user_like_comment_ids:
+            comment_dict['is_like'] = True
+        comment_lists.append(comment_dict)
     # 构造模板数据
     context = {
         'user': user,
@@ -223,4 +235,70 @@ def comment_comment():
     data = {'children_comment': children_comment.to_dict()}
     # 响应结果
     return jsonify(errno=response_code.RET.OK, errmsg='评论成功!', data=data)
+
+
+@news_blue.route('/like_comment', methods=['POST'])
+@user_login_data
+def like_comment():
+    """用户点赞评论"""
+    # 获取当前登录的用户信息
+    user = g.user
+    if not user:
+        return jsonify(errno=response_code.RET.SESSIONERR, errmsg='您还没登录')
+    # 用户登录了
+    # 接收参数
+    comment_id = request.json.get('comment_id')
+    action = request.json.get('action')
+    # 校验参数
+    try:
+        comment_id = int(comment_id)
+    except Exception as e:
+        logging.error(e)
+        return jsonify(errno=response_code.RET.PARAMERR, errmsg='参数错误')
+
+    if action not in ['add', 'remove']:
+        return jsonify(errno=response_code.RET.PARAMERR, errmsg='参数错误')
+
+    # 根据传入的comment_id 查看评论是否存在
+    try:
+        comment = Comment.query.filter(Comment.id == comment_id).first()
+    except Exception as e:
+        logging.error(e)
+        return jsonify(errno=response_code.RET.DBERR, errmsg='查询评论出错')
+    if not comment:
+        return jsonify(errno=response_code.RET.DBERR, errmsg='评论不存在')
+    try:
+        # 查看用户的赞是否存在
+        comment_like_model = CommentLike.query.filter(CommentLike.comment_id==comment_id, CommentLike.user_id==user.id).first()
+    except Exception as e:
+        return jsonify(errno=response_code.RET.DBERR, errmsg='查询点赞出错')
+
+    if action == 'add':
+        if not comment_like_model:
+            user_comment_like = CommentLike()
+            user_comment_like.comment_id = comment_id,
+            user_comment_like.user_id = user.id
+            db.session.add(user_comment_like)
+            # 累加点赞
+            comment.like_count += 1
+    else:
+        if comment_like_model:
+            db.session.delete(comment_like_model)
+            # 减少点赞量
+            comment.like_count -= 1
+    # 同步数据库
+    try:
+        db.session.commit()
+    except Exception as e:
+        logging.error(e)
+        db.session.rollback()
+        return jsonify(errno=response_code.RET.DBERR, errmsg='点赞失败')
+    if action == 'add':
+        return jsonify(errno=response_code.RET.OK, errmsg='点赞成功')
+    if action == 'remove':
+        return jsonify(errno=response_code.RET.OK, errmsg='取消成功')
+
+
+
+
 

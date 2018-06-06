@@ -99,7 +99,7 @@ $(function(){
                     comment_html += '<div class="comment_time fl">';
                     comment_html += comment.create_time;
                     comment_html += '</div>';
-                    comment_html += '<a href="javascript:;" class="comment_up has_comment_up fr">' + comment.id + '</a>';
+                    comment_html += '<a href="javascript:;" class="comment_up fr" data-commentid="'+comment.id+'">' + '赞</a>';
                     comment_html += '<a href="javascript:;" class="comment_reply fr">回复</a>';
                     comment_html += '<from class="reply_form fl" data-newsid="'+comment.news_id+'" data-commentid="'+comment.id+'">';
                     comment_html += '<textarea class="reply_input"></textarea>';
@@ -119,32 +119,75 @@ $(function(){
                 alert('服务器超时，请重试!')
             })
     });
-
-    $('.comment_list_con').delegate('a,input','click',function(){
+        // TODO 点赞
+    $('.comment_list_con').delegate('a,input','click',function() {
 
         var sHandler = $(this).prop('class');
 
-        if(sHandler.indexOf('comment_reply')>=0)
-        {
+        if (sHandler.indexOf('comment_reply') >= 0) {
             $(this).next().toggle();
         }
 
-        if(sHandler.indexOf('reply_cancel')>=0)
-        {
+        if (sHandler.indexOf('reply_cancel') >= 0) {
             $(this).parent().toggle();
         }
 
-        if(sHandler.indexOf('comment_up')>=0)
-        {
+        if (sHandler.indexOf('comment_up') >= 0) {
             var $this = $(this);
-            if(sHandler.indexOf('has_comment_up')>=0)
-            {
+            // 表示当前的操作
+            var action = 'add';
+            if (sHandler.indexOf('has_comment_up') >= 0) {
                 // 如果当前该评论已经是点赞状态，再次点击会进行到此代码块内，代表要取消点赞
-                $this.removeClass('has_comment_up')
-            }else {
-                $this.addClass('has_comment_up')
+                // $this.removeClass('has_comment_up')
+                action = 'remove'
             }
-        }
+            // else {
+            //     $this.addClass('has_comment_up')
+            // }
+            var comment_id = $(this).attr('data-commentid');
+            var params = {'action': action, 'comment_id': comment_id}
+
+
+        $.ajax({
+            url: '/news/like_comment',
+            type: 'post',
+            contentType: 'application/json',
+            headers: {'X-CSRFToken': getCookie('csrf_token')},
+            data: JSON.stringify(params)
+        })
+            .done(function (response) {
+                if (response.errno == '0') {
+                    alert(response.errmsg);
+                    var like_count = $this.attr('data-likecount');
+                    if (like_count ==undefined){
+                        like_count = 0;
+                    }
+                    if (action == 'add') {
+                        like_count = parseInt(like_count) + 1;
+                        $this.addClass('has_comment_up')
+                    } else {
+                        like_count = parseInt(like_count) - 1;
+                        $this.removeClass('has_comment_up')
+                    }
+                    // 跟新点赞的数据
+                    $this.attr('data-likecount', like_count);
+                    if (like_count == 0) {
+                            $this.html("赞")
+                        }else {
+                            $this.html(like_count)
+                        }
+                } else if (response.errno == '4101') {
+                    $('.login_form_con').show()
+                }
+                else {
+                    alert(response.errmsg)
+                }
+            })
+            .fail(function () {
+                alert('服务器超时，请重试!')
+            });
+    }
+
         // TODO 回复评论
         if(sHandler.indexOf('reply_sub')>=0)
         {
@@ -192,7 +235,7 @@ $(function(){
                         comment_html += '</div>';
                         comment_html += '</div>';
                         comment_html += '<div class="comment_time fl">' + comment.create_time + '</div>';
-                        comment_html += '<a href="javascript:;" class="comment_up fr" data-commentid="' + comment.id + '" data-newsid="' + comment.news_id + '">赞</a>';
+                        comment_html += '<a href="javascript:;" class="comment_up fr" data-commentid="' + comment.id + '">赞</a>';
                         comment_html += '<a href="javascript:;" class="comment_reply fr">回复</a>';
                         comment_html += '<form class="reply_form fl" data-commentid="' + comment.id + '" data-newsid="' + comment.news_id + '">';
                         comment_html += '<textarea class="reply_input"></textarea>';
