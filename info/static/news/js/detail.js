@@ -186,7 +186,7 @@ $(function(){
             .fail(function () {
                 alert('服务器超时，请重试!')
             });
-    }
+        }
 
         // TODO 回复评论
         if(sHandler.indexOf('reply_sub')>=0)
@@ -254,6 +254,32 @@ $(function(){
                 })
                 .fail(function () {
                     alert('服务器超时，请重试!')
+                })
+        }
+
+        // TODO 删除评论
+        if (sHandler.indexOf('comment_delete') >= 0) {
+            // 获取参数
+            var params = {
+                'news_id': $(this).attr('data-newsid'),
+                'comment_id': $(this).attr('data-commentid')
+            }
+            $.ajax({
+                url:'/news/delete_comment',
+                type:'post',
+                contentType:'application/json',
+                data:JSON.stringify(params),
+                headers:{'X-CSRFToken': getCookie('csrf_token')}
+            })
+                .done(function (response) {
+                    if (response.errno=='0'){
+                        alert(response.errmsg)
+                        window.location.reload()
+                    }else if (response.errno=='4101'){
+                        $('.login_form_con').show()
+                    }else{
+                        alert(response.errmsg)
+                    }
                 })
         }
     });

@@ -299,6 +299,50 @@ def like_comment():
         return jsonify(errno=response_code.RET.OK, errmsg='取消成功')
 
 
-
-
+@news_blue.route('/delete_comment', methods=['POST'])
+@user_login_data
+def delete_comment():
+    """删除评论"""
+    # 当前登录用户的信息
+    user = g.user
+    if not user:
+        return jsonify(errno=response_code.RET.SESSIONERR, errmsg='您还未登录')
+    # 接收参数，comment_id
+    delete_comment_id = request.json.get('comment_id')
+    news_id = request.json.get('news_id')
+    try:
+        news_id = int(news_id)
+        delete_comment_id = int(delete_comment_id)
+    except Exception as e:
+        logging.error(e)
+        return jsonify(errno=response_code.RET.PARAMERR, errmsg='参数错误')
+    try:
+        # 查看这条评论是否存在
+        delete_comment = Comment.query.get(delete_comment_id)
+        # 查询当前新闻所有评论
+        news_comments = Comment.query.filter(Comment.news_id == news_id).all()
+    except Exception as e:
+        logging.error(e)
+        return jsonify(errno=response_code.RET.DBERR, errmsg='查询评论失败')
+    if not delete_comment:
+        return jsonify(errno=response_code.RET.NODATA, errmsg='该评论不存在')
+    # 当前用户如果不是管理员
+    if not user.is_admin:
+        # 当前评论是否是当前用户写的评论
+        if delete_comment.user_id != user.id:
+            return jsonify(errno=response_code.RET.IOERR, errmsg='不能删除别人的评论')
+    # 判断这条评论是否有子评论(comment.id == comment.parent_id就有子评论)，不能删除
+    for news_comment in news_comments:
+        if delete_comment.id == news_comment.parent_id:
+            return jsonify(errno=response_code.RET.IOERR, errmsg='请先删除子评论')
+    # 没有子评论，允许删除
+    db.session.delete(delete_comment)
+    try:
+        # 同步数据
+        db.session.commit()
+    except Exception as e:
+        logging.error(e)
+        return jsonify(errno=response_code.RET.DBERR, errmsg='删除失败')
+    # 响应结果
+    return jsonify(errno=response_code.RET.OK, errmsg='删除成功')
 

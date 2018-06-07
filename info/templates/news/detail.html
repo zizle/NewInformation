@@ -82,6 +82,7 @@
             {% endif %}
                 <div class="comment_time fl">{{ comment.create_time }}</div>
 {#点赞状态的渲染#}
+                <a href="javascript:;" data-newsid="{{ context.news.id }}" data-commentid="{{ comment.id }}" class="comment_delete fr">删除</a>
                 <a href="javascript:;" data-likecount="{{ comment.like_count }}" data-commentid="{{ comment.id }}" class="comment_up fr {% if comment.is_like %}has_comment_up{% endif %}">{% if comment.like_count>0 %}{{ comment.like_count }}{% else %}赞{% endif %}</a>
                 <a href="javascript:;" class="comment_reply fr">回复</a>
 
@@ -196,7 +197,7 @@
             </div>
             <ul class="rank_list">
                 {% for news in context.news_clicks %}
-                    <li><span class="{{ loop.index | rank }}">{{ loop.index }}</span><a href="#">{{ news.title }}</a></li>
+                    <li><span class="{{ loop.index | rank }}">{{ loop.index }}</span><a href="{{ url_for('news.news_detail', news_id=news.id) }}">{{ news.title }}</a></li>
                 {% endfor %}
 {#点击排行的渲染#}
 
