@@ -17,9 +17,10 @@ def logout():
     """退出登录"""
     # 清除cookie状态保持
     try:
-        session.pop('user_id')
-        session.pop('nick_name')
-        session.pop('mobile')
+        session.pop('user_id', None)
+        session.pop('nick_name', None)
+        session.pop('mobile', None)
+        session.pop('is_admin', False)
     except Exception as e:
         logging.error(e)
         return jsonify(errno=response_code.RET.SESSIONERR, errmsg='退出失败')

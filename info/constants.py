@@ -8,13 +8,16 @@ SMS_CODE_REDIS_EXPIRES = 180
 QINIU_DOMIN_PREFIX = "http://oyucyko3w.bkt.clouddn.com/"
 
 # 首页展示最多的新闻数量
-HOME_PAGE_MAX_NEWS = 10
+HOME_PAGE_MAX_NEWS = 6
 
 # 用户的关注每一页最多数量
 USER_FOLLOWED_MAX_COUNT = 4
 
 # 用户收藏最多新闻数量
 USER_COLLECTION_MAX_NEWS = 10
+
+# 用户发布新闻最多展示数量
+USER_RELEASE_MAX_NEWS = 5
 
 # 其他用户每一页最多新闻数量
 OTHER_NEWS_PAGE_MAX_COUNT = 10

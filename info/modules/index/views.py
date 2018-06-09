@@ -63,9 +63,9 @@ def new_list():
     try:
         # 根据参数查询数据库
         if cid == 1:
-            paginate = News.query.order_by(News.create_time.desc()).paginate(page, per_page, False)
+            paginate = News.query.filter(News.status == 0).order_by(News.create_time.desc()).paginate(page, per_page, False)
         else:
-            paginate = News.query.filter(News.category_id == cid).order_by(News.create_time.desc()).paginate(page, per_page, False)
+            paginate = News.query.filter(News.status == 0, News.category_id == cid).order_by(News.create_time.desc()).paginate(page, per_page, False)
     except Exception as e:
         logging.error(e)
         return jsonify(errno=response_code.RET.DBERR, errmsg='获取数据失败')

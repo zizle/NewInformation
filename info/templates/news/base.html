@@ -33,8 +33,8 @@
         {% block user_login_info %}
             {% if context.user %}
             <div class="user_login fr">
-                <img src="{% if context.user.avatar_url %}{{ context.user.avatar_url }}{% endif %}../../../static/news/images/cat.png" class="lgin_pic">
-                <a href="#">{{ context.user.nick_name }}</a>
+                <a href="/user/info"><img src="{% if context.user.avatar_url %}{{ context.user.avatar_url }}{% endif %}../../../static/news/images/cat.png" class="lgin_pic"></a>
+                <a href="/user/info">{{ context.user.nick_name }}</a>
                 <a href="javascript:;" onclick="logout()">退出</a>
             </div>
             {% else %}

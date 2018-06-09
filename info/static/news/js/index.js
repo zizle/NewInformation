@@ -85,7 +85,7 @@ function updateNewsData() {
                         content += '<div class="author fl"><img src="'
                             if(user.avatar_url){content += user.avatar_url}
                             else{content += '../static/news/images/cat.png'}
-                        content += '" alt="author"><a href="#">' + user.nick_name + '</a></div>';
+                        content += '" alt="author"><a href="user/other_info?user_id='+user.id+'">' + user.nick_name + '</a></div>';
                         }
                     else{content += '<div class="source fl">来源：' + news.source + '</div>';}
                     content += '<div class="time fl">' + news.create_time + '</div>';

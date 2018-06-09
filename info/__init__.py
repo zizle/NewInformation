@@ -1,5 +1,5 @@
 # _*_ coding:utf-8 _*_
-from flask import Flask
+from flask import Flask, render_template
 from config import configs
 from flask_sqlalchemy import SQLAlchemy
 from redis import StrictRedis
@@ -43,6 +43,12 @@ def create_app(config_name):
     # 开启csrf保护
     CSRFProtect(app)
 
+    # 友好的界面展示404
+    @app.errorhandler(404)
+    def handler_not_found(e):
+        """处理404页面"""
+        return render_template('news/404.html')
+
     # 在每次请求之后响应向浏览器写入cookie(csrf_token)
     @app.after_request
     def setup_csrf(response):
@@ -62,4 +68,8 @@ def create_app(config_name):
     # 注册news_detail蓝图
     from info.modules.news import news_blue
     app.register_blueprint(news_blue)
+    from info.modules.user import user_blue
+    app.register_blueprint(user_blue)
+    from info.modules.admin import admin_blue
+    app.register_blueprint(admin_blue)
     return app
