@@ -8,6 +8,12 @@ from info.utils.file_storage import upload_file
 from info.models import Category, News, User
 
 
+@user_blue.route('modify_password')
+def modify_password():
+    """修改密码"""
+    return render_template('news/user_modify_password.html')
+
+
 @user_blue.route('/other_news_list')
 def other_news_list():
     # 1.获取页数
