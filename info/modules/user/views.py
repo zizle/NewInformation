@@ -8,10 +8,19 @@ from info.utils.file_storage import upload_file
 from info.models import Category, News, User
 
 
-@user_blue.route('modify_password')
+@user_blue.route('modify_password', methods=['POST'])
 def modify_password():
     """修改密码"""
-    return render_template('news/user_modify_password.html')
+
+    if request.method == "GET":
+        return render_template('news/user_modify_password.html')
+    else:
+        # 接收参数
+        # 校验参数
+        # 修改数据
+        # 同步数据
+        # 返回响应结果
+        return jsonify(errno=response_code.RET.OK, errmsg='修改成功')
 
 
 @user_blue.route('/other_news_list')
