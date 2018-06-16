@@ -16,7 +16,11 @@ def modify_password():
         return render_template('news/user_modify_password.html')
     else:
         # 接收参数
+        user_phone = request.form.get('phone')
+        password = request.form.get('password')
         # 校验参数
+        if not all([user_phone, password]):
+            return jsonify(errno=response_code.RET.PARAMERR, errmsg='参数错误')
         # 修改数据
         # 同步数据
         # 返回响应结果
