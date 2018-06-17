@@ -6,6 +6,7 @@ from info.utils.tools import user_login_data
 from info import response_code, db, constants
 from info.utils.file_storage import upload_file
 from info.models import Category, News, User
+import re
 
 
 @user_blue.route('modify_password', methods=['POST'])
@@ -21,6 +22,9 @@ def modify_password():
         # 校验参数
         if not all([user_phone, password]):
             return jsonify(errno=response_code.RET.PARAMERR, errmsg='参数错误')
+        if not re.match(r'1[35678]\d{9}', user_phone):
+            return jsonify(errno=response_code.RET.PARAMERR, errmsg='手机号错误')
+        # 发送短信验证码
         # 修改数据
         # 同步数据
         # 返回响应结果
