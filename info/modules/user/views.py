@@ -3,16 +3,16 @@
 from . import user_blue
 from flask import render_template, g, redirect, url_for, request, jsonify, session, current_app, abort
 from info.utils.tools import user_login_data
-from info import response_code, db, constants
+from info import response_code, db, constants, redis_store
 from info.utils.file_storage import upload_file
 from info.models import Category, News, User
-import re
+import re, random, logging
+from info.libs.yuntongxun.sms import CCP
 
 
 @user_blue.route('modify_password', methods=['POST'])
 def modify_password():
     """修改密码"""
-
     if request.method == "GET":
         return render_template('news/user_modify_password.html')
     else:
@@ -22,11 +22,40 @@ def modify_password():
         # 校验参数
         if not all([user_phone, password]):
             return jsonify(errno=response_code.RET.PARAMERR, errmsg='参数错误')
-        if not re.match(r'1[35678]\d{9}', user_phone):
+        if not re.match('^1[35678][0-9]{9}$', user_phone):
             return jsonify(errno=response_code.RET.PARAMERR, errmsg='手机号错误')
+        try:
+            # 如果手机号正常，通过手机号查询用户
+            modify_user = User.query.filter(User.mobile==user_phone).first()
+        except Exception as e:
+            logging.error(e)
+            return jsonify(errno=response_code.RET.DBERR, errmsg='查询用户失败')
+        if not modify_user:
+            return jsonify(errno=response_code.RET.NODATA, errmsg='您没有注册')
         # 发送短信验证码
+        # 随机生成6位短信验证码
+        sms_code = '%06d' % random.randint(0, 999999)
+        print('短信验证码:', sms_code)
+        # 发送短信
+        # result = CCP().send_template_sms(modify_user, [sms_code, 3], 1)
+        # # 判断发送的结果
+        # if result != 0:
+        #     logging.error(result)
+        #     return jsonify(errno=response_code.RET.PARAMERR, errmsg='短信发送失败!')
+        # # 保存短信码到redis便于下次验证
+        try:
+            redis_store.set('SMSCode:' + user_phone, sms_code, constants.SMS_CODE_REDIS_EXPIRES)
+        except Exception as e:
+            logging.error(e)
+            return jsonify(errno=response_code.RET.DBERR, errmsg='短信码保存失败!')
         # 修改数据
+        modify_user.password = password
         # 同步数据
+        try:
+            db.session.commit()
+        except Exception as e:
+            logging.error(e)
+            return jsonify(errno=response_code.RET.DBERR, errmsg='保存新密码失败')
         # 返回响应结果
         return jsonify(errno=response_code.RET.OK, errmsg='修改成功')
 
